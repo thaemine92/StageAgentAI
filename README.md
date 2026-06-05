@@ -7,7 +7,7 @@ Système d'agent conversationnel intelligent dédié à la prise de rendez-vous 
 * **Gestion simplifiée pour le professionnel** : Le système s'occupe de la logistique (consignes de préparation, rappels, vérification de disponibilité).
 * **Analytique pour la Décision** : Grâce à la centralisation , le professionnel peut obtenir des rapports sur les périodes de forte demande, permettant d'optimiser la gestion des ressources et du personnel.
 * **Robustesse face aux imprévus** : L'architecture intègre des mécanismes de gestion d'erreurs (codes de retour d'API) qui permettent à l'agent de gérer élégamment les pannes temporaires (ex: "Désolé, nos systèmes de réservation sont temporairement indisponibles, veuillez réessayer dans quelques instants"). 
-## Modèle de Données (MDD)
+## Modèle du domaine (MDD)
 
 Le système repose sur une architecture robuste assurant la traçabilité des logs et la confidentialité des données sensibles.
 ### Organisation des entités
