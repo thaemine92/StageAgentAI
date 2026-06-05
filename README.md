@@ -9,7 +9,10 @@ Système d'agent conversationnel intelligent dédié à la prise de rendez-vous 
 * **Robustesse face aux imprévus** : L'architecture intègre des mécanismes de gestion d'erreurs (codes de retour d'API) qui permettent à l'agent de gérer élégamment les pannes temporaires (ex: "Désolé, nos systèmes de réservation sont temporairement indisponibles, veuillez réessayer dans quelques instants"). 
 ## Modèle du domaine (MDD)
 
-Le système repose sur une architecture robuste assurant la traçabilité des logs et la confidentialité des données sensibles.
+Le système du modèle repose sur une architecture robuste assurant la traçabilité des logs et la confidentialité des données sensibles.Ce diagramme nous permet de visualiser la structure des données et la logique relationnelle entre les différentes entités.
+
+![Schéma du Modèle de Données](Diagramme/MDD_provisoire.svg)
+
 ### Organisation des entités
 Le modèle est structuré autour de cinq pôles fonctionnels :
 
