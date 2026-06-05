@@ -1,0 +1,6 @@
+En tant qu'administrateur technique, je veux avoir accès à un journal des erreurs (logs) des appels et messages, afin d'identifier rapidement les échecs de compréhension ou les problèmes d'API (Twilio/OpenAI)
+En tant qu'administrateur technique, je veux consulter des métriques sur le temps de réponse de l'IA, afin de m'assurer que le service reste rapide et fluide pour l'utilisateur.
+En tant qu'administrateur technique, je veux pouvoir simuler une interaction (Test Chat) directement depuis l'interface admin, afin de vérifier le comportement de l'IA sans avoir à passer par le canal téléphonique réel.
+En tant qu'administrateur technique, je veux pouvoir mettre à jour les "instructions système" de l'agent sans redéployer tout le backend, afin de corriger une erreur de comportement en temps réel.
+En tant qu'administrateur technique, je veux pouvoir révoquer ou régénérer les clés API d'un commerçant, afin de protéger le système en cas de compromission des identifiants.
+En tant qu'administrateur technique, je veux pouvoir purger les logs de conversations anciennes (selon les politiques de confidentialité), afin de garantir que nous respectons les normes de protection des données.

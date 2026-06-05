@@ -1,0 +1,88 @@
+@startuml MDD provisoire
+
+hide circle 
+hide empty members
+
+' Configuration pour un look professionnel
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Définition des entités
+
+' Compte de base des différents proféssionnels (Médecin, Commerçant, développeurs, etc)
+class CompteProfessionnel {
+    String id
+    String Nom_Entité
+    String Email
+    String MotDePasse_Hash
+    String Type_Activité
+    Datetime disponibilité
+    Boolean mode_urgence_actif
+}
+
+' ReferentielServices Correspond aux différents services proféssionel proposés (ex: Médecin, Commerçant, etc)
+class ReferentielServices { 
+    String id
+    String id_Referentiel
+    String Nom_Service
+    String Prix
+    String Instructions_Preparation
+    Boolean est_urgent
+}
+
+class ConfigurationAgentAI {
+    String id
+    String prompt_système
+    String paramètres_voix
+}
+
+class Client {
+    String id
+    String nom
+    String téléphone
+    String email
+    String RAMQ
+    Date date_naissance
+    Boolean consentement_partage_données
+}
+
+' ReferentielServices_id est dans RDV pour faire le lien entre le service proposé et le rendez-vous
+class RendezVous {
+    String id
+    String CompteProfessionnel_id
+    String Client_id
+    String ReferentielServices_id 
+    DateTime heure_début
+    String statut
+    String consignes_specifiques
+}
+
+class LogSysteme {
+    String id
+    String Client_id
+    String CompteProfessionnel_id
+    DateTime Timestamp
+    String type_evenement
+    String statut
+    Boolean est_anonyme
+    String canal_communication
+    Float temps_reponse_ms
+    String erreur_code
+}
+
+
+' Relations
+CompteProfessionnel "1" -- "0..*" ReferentielServices : propose >
+Client "1" -- "1..*" ConfigurationAgentAI : sollicite >
+CompteProfessionnel "1" -- "0..*" RendezVous : consulte >
+Client "1" -- "0..*" CompteProfessionnel : appelle >
+Client "1" -- "0..*" RendezVous : consulte >
+ConfigurationAgentAI "1" -- "0..*" RendezVous : effectue >
+ConfigurationAgentAI "1" -- "0..*" LogSysteme : génère >
+CompteProfessionnel "1" -- "0..*" LogSysteme : consulte >
+ReferentielServices "1" -- "0..*" RendezVous : définit >
+
+@enduml

@@ -1,0 +1,7 @@
+En tant que médecin, je veux que les données personnelles et médicales de mes patients soient traitées de manière sécurisée et confidentielle, afin de respecter les normes de protection des données. 
+En tant que médecin, je veux que l'agent puisse être capable de filtrer les types de rendez-vous (ex: consultation de routine ou d'urgence), afin que seuls les créneaux appropriés soient proposés au patient. 
+En tant que médecin, je veux que l'agent m'alerte ou me transfère l'appel si une demande complexe sort de ses compétences, afin de garantir une prise en charge de qualité pour les cas particuliers. 
+En tant que médecin, je veux que l'agent IA puisse collecter les informations de base des nouveaux patients (ex: nom, date de naissance, RAMQ) lors de la prise de rendez-vous, afin de préparer le dossier administratif.
+En tant que médecin, je veux que l'agent informe le patient des documents ou informations à apporter le jour de sa visite, afin d'optimiser le déroulement de la consultation.
+En tant que médecin, je veux que l'agent puisse inclure des instructions spécifiques dans les rappels de rendez-vous (ex: « Veuillez arriver 15 minutes en avance », « Être à jeun pour l'examen »), afin d'éviter les contretemps.
+En tant que médecin, je veux que les transcriptions des appels soient anonymisées ou supprimées après le transfert dans mon système interne, afin de respecter les normes de confidentialité médicale.

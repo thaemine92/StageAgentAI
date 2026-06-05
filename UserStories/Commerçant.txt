@@ -1,0 +1,8 @@
+En tant que commerçant, je veux définir mes plages de disponibilité et la durée des services, afin que l'agent IA ne propose que des créneaux réalistes aux utilisateurs.
+En tant que commerçant, je veux pouvoir configurer les instructions de base de l'IA (ton, politesse), afin que l'agent reflète fidèlement l'image de mon entreprise.
+En tant que commerçant, je veux visualiser sur un dashboard la liste de mes rendez-vous et des statistiques simples, afin de garder une vue d'ensemble sur mon activité.
+En tant que commerçant, je veux pouvoir désactiver l'agent IA pour des périodes de fermeture exceptionnelle, afin de reprendre manuellement la gestion des appels.
+En tant que commerçant, je veux recevoir une notification lors de chaque confirmation ou annulation de rendez-vous, afin de rester informé en temps réel.
+En tant que commerçant, je veux pouvoir créer un compte sur la plateforme , afin de commencer la configuration de mon agent IA.
+En tant que commerçant, je veux m'authentifier de manière sécurisée sur mon tableau de bord, afin d'accéder à mes données de rendez-vous et à mes statistiques sans risque d'accès non autorisé.
+En tant que commerçant, je veux pouvoir réinitialiser mon mot de passe en cas d'oubli, afin de ne jamais perdre l'accès à la gestion de mes rendez-vous.

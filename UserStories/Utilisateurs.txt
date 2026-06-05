@@ -1,0 +1,7 @@
+En tant qu'utilisateur, je veux pouvoir échanger avec l'agent IA que ce soit par voie téléphonique, SMS ou WhatsApp, afin de choisir le moyen de communication le plus pratique pour moi.
+En tant qu'utilisateur, je veux que l'agent comprenne mes demandes en français québécois, afin de pouvoir m'exprimer naturellement sans effort.
+En tant qu'utilisateur, je veux pouvoir modifier ou annuler un rendez-vous existant via l'agent, afin de gérer mon emploi du temps sans attendre l'ouverture du commerce.
+En tant qu'utilisateur, je veux recevoir une confirmation automatique de ma réservation, afin d'avoir une preuve immédiate de mon créneau.
+En tant qu'utilisateur, je veux que l'agent puisse m'identifier via mon numéro de téléphone ou mon identifiant WhatsApp, afin de ne pas avoir à créer un compte utilisateur spécifique pour prendre rendez-vous.
+En tant qu'utilisateur, je veux que l'agent reconnaisse mes rendez-vous précédents via mon numéro de téléphone, afin de pouvoir modifier ou annuler une réservation existante sans ressaisir toutes mes informations.
+En tant qu'utilisateur, je veux être informé sur la manière dont mes données sont traitées lors de ma première interaction, afin de donner mon consentement pour la prise de rendez-vous.
