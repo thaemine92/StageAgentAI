@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "react-calendar/dist/Calendar.css";
+
+/* Base Tailwind */
+@layer base {
+  body {
+    @apply bg-slate-900 text-white;
+  }
+}
+
+/* Styles Calendrier pour forcer la grille */
+.custom-calendar-container .react-calendar {
+  width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  color: white !important;
+  font-family: inherit !important;
+}
+
+.custom-calendar-container .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+.custom-calendar-container .react-calendar__tile {
+  background: transparent !important;
+  color: white !important;
+  padding: 10px !important;
+}
+
+.custom-calendar-container .react-calendar__tile--now {
+  background: #3b82f6 !important; /* Bleu pour aujourd'hui */
+  border-radius: 8px;
+}
+
+.custom-calendar-container .react-calendar__tile:hover {
+  background: #334155 !important; /* Slate-700 au survol */
+  border-radius: 8px;
+}
+
+/* En-tête du calendrier (Jours de la semaine) */
+.custom-calendar-container .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #94a3b8; /* Gray-400 */
+}
+
+/* Forcer le conteneur du calendrier à s'étirer */
+.react-calendar {
+  width: 100% !important;
+  min-width: 100% !important; /* Force la largeur totale */
+}
+
+/* Ajuster les en-têtes pour qu'ils soient lisibles */
+.react-calendar__navigation {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 1rem !important;
+}
+
+.my-calendar-override {
+  width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* On force la grille à prendre tout l'espace */
+.my-calendar-override .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  width: 100% !important;
+}
