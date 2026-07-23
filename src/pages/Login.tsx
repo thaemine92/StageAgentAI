@@ -1,64 +1,69 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { validateAndLogin } from '../controllers/authController';
 
 const Login = () => {
-  const navigate = useNavigate();
-  
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [role, setRole] = useState<'MEDECIN' | 'CLIENT'>('CLIENT');
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Appel de la méthode centralisée dans le contrôleur
+    const result = validateAndLogin(email, role);
 
-    if (email === 'admin@doclinic.com' && password === '123456') {
-      navigate('/dashboard');
-    } else {
-      setError('Email ou mot de passe incorrect.');
+    if (!result.success) {
+      alert(result.error);
+      return;
     }
+
+    // Redirection si tout est valide
+    navigate(result.redirectTo);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Connexion</h2>
+    <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
+      <form onSubmit={handleLogin} className="bg-slate-900 p-8 rounded-xl border border-slate-800 w-96 space-y-4">
+        <h1 className="text-2xl font-bold text-blue-400 mb-6">Connexion à Doclinic</h1>
         
-        <form onSubmit={handleLogin} className="space-y-4">
-          {/* Message d'erreur si la connexion échoue */}
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Email</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="admin@doclinic.com"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Mot de passe</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
+        {/* Sélecteur de rôle */}
+        <div className="flex bg-slate-800 p-1 rounded-lg mb-4">
+          <button
+            type="button"
+            onClick={() => setRole('CLIENT')}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${role === 'CLIENT' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
           >
-            Se connecter
+            Patient
           </button>
-        </form>
-      </div>
+          <button
+            type="button"
+            onClick={() => setRole('MEDECIN')}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${role === 'MEDECIN' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+          >
+            Médecin
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Adresse email</label>
+          <input 
+            type="email" 
+            value= {email} 
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={role === 'MEDECIN' ? "docteur@doclinic.com" : "mon.email@client.com"}
+            className="w-full p-3 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          className="w-full py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded transition-colors"
+        >
+          Se connecter en tant que {role === 'MEDECIN' ? 'Médecin' : 'Patient'}
+        </button>
+      </form>
     </div>
   );
 };

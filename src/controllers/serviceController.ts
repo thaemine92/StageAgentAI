@@ -1,6 +1,4 @@
-// controllers/serviceController.ts
 import { Request, Response } from 'express';
-// Supposons que tu aies un service d'accès aux données (ex: db.ts)
 import { db } from '../config/db'; 
 
 export const getServices = async (req: Request, res: Response) => {
