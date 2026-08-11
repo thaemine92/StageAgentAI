@@ -6,6 +6,7 @@ const Sidebar = () => {
     { name: "Tableau de bord", icon: "🏠", path: "/dashboard" },
     { name: "Patients", icon: "👥", path: "/patients" },
     { name: "Rendez-vous", icon: "📅", path: "/rendezvous" },
+    { name: "Chat", icon: "💬", path: "/chat" },
     { name: "Documents", icon: "📁", path: "/documents" },
     { name: "Paramètres", icon: "⚙️", path: "/parametres" },
   ];
