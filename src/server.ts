@@ -6,8 +6,13 @@ import path from 'path';
 // Charger les variables d'environnement
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+// Initialiser la base de données
+import { initializeDatabase } from './database/db';
+import { initializeTables } from './database/initDb';
+
 // Importer les routes
-import appointmentRoutes from './routes/serviceRoutes';
+import appointmentRoutes from './routes/appointmentRoutes';
+import serviceRoutes from './routes/serviceRoutes';
 import aiRoutes from './routes/aiRoutes';
 import authRoutes from './routes/authRoutes';
 
@@ -24,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes API
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/services', serviceRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
 
@@ -41,10 +47,27 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Erreur interne du serveur' });
 });
 
+// Fonction principale async pour démarrer le serveur
+async function startServer() {
+  try {
+    // Initialiser la base de données au démarrage
+    console.log('🔄 Initialisation de la base de données...');
+    await initializeDatabase();
+    await initializeTables();
+    console.log('✅ Base de données initialisée avec succès');
+    
+    // Démarrer le serveur
+    app.listen(PORT, () => {
+      console.log(`⚡ Serveur en écoute sur http://localhost:${PORT}`);
+      console.log(`🔗 Frontend: http://localhost:5173`);
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'initialisation de la base de données:', error);
+    process.exit(1);
+  }
+}
+
 // Démarrer le serveur
-app.listen(PORT, () => {
-  console.log(`⚡ Serveur en écoute sur http://localhost:${PORT}`);
-  console.log(`🔗 Frontend: http://localhost:5173`);
-});
+startServer();
 
 export default app;

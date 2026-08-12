@@ -1,5 +1,4 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { logoutUser } from '../controllers/authController';
 
 const Sidebar = () => {
   const menuItems = [
@@ -14,7 +13,9 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logoutUser();
+    // Supprimer le token de la session
+    localStorage.removeItem('userToken');
+    // Rediriger vers la page d'accueil
     navigate('/');
   };
 

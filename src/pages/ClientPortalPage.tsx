@@ -1,16 +1,29 @@
 import { useClients } from '../hooks/UseClients';
-import { getAppointments } from '../controllers/appointmentController'; 
+import { useState, useEffect } from 'react';
+import { RendezVous } from '../models/RendezVous';
 
-const ClientPortalPage = async () => {
+const ClientPortalPage = () => {
   // Pour l'exemple, on simule l'ID du client connecté (normalement récupéré via l'authentification)
   const currentClientId = "client-1"; 
 
   const clients = useClients();
   const client = clients.find(c => c.id === currentClientId);
+  
+  const [clientAppointments, setClientAppointments] = useState<RendezVous[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Récupérer les rendez-vous liés à ce client spécifique
-  const allAppointments = getAppointments();
-  const clientAppointments = (await allAppointments).filter(rdv => rdv.client_id === currentClientId);
+  useEffect(() => {
+    // Récupérer les rendez-vous via l'API
+    fetch(`/api/appointments/client/${currentClientId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setClientAppointments(data.appointments || []);
+        }
+      })
+      .catch(() => setClientAppointments([]))
+      .finally(() => setLoading(false));
+  }, [currentClientId]);
 
   if (!client) {
     return <div className="p-8 text-white">Chargement de votre espace personnel...</div>;

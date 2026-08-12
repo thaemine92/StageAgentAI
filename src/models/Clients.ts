@@ -3,9 +3,10 @@
  * Les données sensibles sont identifiées pour une gestion sécurisée.
  */
 export interface Client {
-  email: import("react").JSX.Element;
-  id: string; 
+  id: string;
+  email: string;
   telephone: string; // (SMS/WhatsApp)
+  mot_de_passe_hash: string;
   
   // à chiffrer en base de données
   ramq: string; 

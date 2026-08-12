@@ -1,25 +1,45 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { validateAndLogin } from '../controllers/authController';
 
 const Login = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<'MEDECIN' | 'CLIENT'>('CLIENT');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Appel de la méthode centralisée dans le contrôleur
-    const result = validateAndLogin(email, role);
+    try {
+      // Appel de l'API backend pour la connexion (proxy vers /api en dev)
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, role }),
+      });
 
-    if (!result.success) {
-      alert(result.error);
-      return;
+      const result = await response.json();
+
+      if (!result.success) {
+        alert(result.message || 'Identifiants invalides');
+        return;
+      }
+
+      // Stocker le token/utilisateur dans localStorage
+      if (result.user) {
+        localStorage.setItem('userToken', JSON.stringify(result.user));
+      }
+
+      // Redirection selon le rôle
+      const redirectTo = role === 'MEDECIN' ? '/dashboard' : '/mon-espace';
+      navigate(redirectTo);
+      
+    } catch (error) {
+      alert('Erreur de connexion. Veuillez réessayer.');
+      console.error('Erreur:', error);
     }
-
-    // Redirection si tout est valide
-    navigate(result.redirectTo);
   };
 
   return (
@@ -49,9 +69,21 @@ const Login = () => {
           <label className="block text-sm text-gray-400 mb-2">Adresse email</label>
           <input 
             type="email" 
-            value= {email} 
+            value={email} 
             onChange={(e) => setEmail(e.target.value)}
             placeholder={role === 'MEDECIN' ? "docteur@doclinic.com" : "mon.email@client.com"}
+            className="w-full p-3 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-2">Mot de passe</label>
+          <input 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Entrez votre mot de passe"
             className="w-full p-3 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-blue-500"
             required
           />

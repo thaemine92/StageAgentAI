@@ -1,9 +1,29 @@
 import { useParams } from 'react-router-dom';
-import { getAppointmentById } from '../controllers/appointmentController';
+import { useState, useEffect } from 'react';
+import { RendezVous } from '../models/RendezVous';
 
 const AppointmentDetailsPage = () => {
-  const { id } = useParams<{ id: string }>(); // On récupère l'ID
-  const rdv = getAppointmentById(id || ''); // On cherche les données
+  const { id } = useParams<{ id: string }>();
+  const [rdv, setRdv] = useState<RendezVous | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetch(`/api/appointments/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setRdv(data.appointment);
+          }
+        })
+        .catch(() => setRdv(null))
+        .finally(() => setLoading(false));
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8 text-white">Chargement...</div>;
+  }
 
   if (!rdv) {
     return <div className="p-8 text-white">Rendez-vous non trouvé.</div>;
@@ -16,7 +36,7 @@ const AppointmentDetailsPage = () => {
         <h2 className="text-xl font-semibold mb-4 text-blue-400">Informations patient</h2>
         <div className="space-y-4">
           <p><span className="text-gray-400">Patient :</span> {rdv.nom_patient}</p>
-          <p><span className="text-gray-400">Heure :</span> {rdv.heure_debut.toLocaleString()}</p>
+          <p><span className="text-gray-400">Heure :</span> {new Date(rdv.heure_debut).toLocaleString()}</p>
           <p><span className="text-gray-400">Statut :</span> {rdv.statut}</p>
           <p><span className="text-gray-400">Consignes :</span> {rdv.consignes_specifiques}</p>
         </div>
