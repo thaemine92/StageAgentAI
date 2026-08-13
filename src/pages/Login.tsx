@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -88,6 +88,12 @@ const Login = () => {
             required
           />
         </div>
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-gray-400">&nbsp;</div>
+          <Link to="/reset-password" className="text-sm text-blue-400 hover:text-blue-300">
+            Mot de passe oublié ?
+          </Link>
+        </div>
 
         <button 
           type="submit" 
@@ -95,6 +101,13 @@ const Login = () => {
         >
           Se connecter en tant que {role === 'MEDECIN' ? 'Médecin' : 'Patient'}
         </button>
+
+        <div className="mt-4 text-center text-sm text-gray-400">
+          Pas encore de compte ?{' '}
+          <Link to="/register" className="font-semibold text-blue-400 hover:text-blue-300">
+            Créer un compte
+          </Link>
+        </div>
       </form>
     </div>
   );

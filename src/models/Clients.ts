@@ -7,6 +7,8 @@ export interface Client {
   email: string;
   telephone: string; // (SMS/WhatsApp)
   mot_de_passe_hash: string;
+  prenom?: string;
+  nom?: string;
   
   // à chiffrer en base de données
   ramq: string; 

@@ -14,6 +14,8 @@ export async function initializeTables(): Promise<void> {
       mot_de_passe_hash TEXT NOT NULL,
       ramq TEXT NOT NULL,
       date_naissance TEXT NOT NULL,
+      prenom TEXT,
+      nom TEXT,
       consentement_partage_donnees INTEGER DEFAULT 0,
       date_creation TEXT DEFAULT CURRENT_TIMESTAMP
     )
@@ -78,6 +80,15 @@ export async function initializeTables(): Promise<void> {
     )
   `);
 
+  // Créer la table des tokens de réinitialisation de mot de passe
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      token TEXT PRIMARY KEY NOT NULL,
+      email TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    )
+  `);
+
   console.log('✅ Toutes les tables créées avec succès');
 
   // Insérer des données de test si les tables sont vides
@@ -94,10 +105,10 @@ async function insertTestData(): Promise<void> {
   if (clientsCount.count === 0) {
     // Insérer des clients de test
     await db.run(`
-      INSERT INTO clients (id, email, telephone, mot_de_passe_hash, ramq, date_naissance, consentement_partage_donnees)
+      INSERT INTO clients (id, email, telephone, mot_de_passe_hash, ramq, date_naissance, prenom, nom, consentement_partage_donnees)
       VALUES 
-        ('client-001', 'patient1@email.com', '+1234567890', '$2b$10$huKenuDHm.Rab9FbLj8po.quG.a1C0suD91zXJtEz3ViicsImWx1G', 'RAMQ001', '1985-05-15', 1),
-        ('client-002', 'patient2@email.com', '+1234567891', '$2b$10$huKenuDHm.Rab9FbLj8po.quG.a1C0suD91zXJtEz3ViicsImWx1G', 'RAMQ002', '1990-08-20', 1)
+        ('client-001', 'patient1@email.com', '+1234567890', '$2b$10$huKenuDHm.Rab9FbLj8po.quG.a1C0suD91zXJtEz3ViicsImWx1G', 'RAMQ001', '1985-05-15', 'Alice', 'Martin', 1),
+        ('client-002', 'patient2@email.com', '+1234567891', '$2b$10$huKenuDHm.Rab9FbLj8po.quG.a1C0suD91zXJtEz3ViicsImWx1G', 'RAMQ002', '1990-08-20', 'Marc', 'Dupont', 1)
     `);
     console.log('📝 Données de test clients insérées');
   }

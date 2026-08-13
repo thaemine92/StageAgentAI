@@ -2,6 +2,8 @@ import { getDatabase } from '../database/db';
 import { verifyPassword } from '../utils/passwordUtils';
 import { CompteProfessionnel } from '../models/CompteProfessionnel';
 import { Client } from '../models/Clients';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 interface UserSession {
   id: string;
@@ -60,7 +62,7 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
     
     // Vérifier chez les clients
     const client = await db.get(
-      'SELECT id, email, mot_de_passe_hash FROM clients WHERE email = ?',
+      'SELECT id, email, mot_de_passe_hash, prenom, nom FROM clients WHERE email = ?',
       [email]
     );
     
@@ -70,7 +72,8 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
         const user: UserSession = {
           id: client.id,
           email: client.email,
-          role: 'CLIENT'
+          role: 'CLIENT',
+          nom: client.prenom && client.nom ? `${client.prenom} ${client.nom}` : undefined
         };
         
         // Stocker en localStorage pour la session (côté client uniquement)
@@ -243,8 +246,8 @@ export const registerUser = async (
       const id = `client-${Date.now()}`;
       
       await db.run(
-        `INSERT INTO clients (id, email, telephone, mot_de_passe_hash, ramq, date_naissance, consentement_partage_donnees) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO clients (id, email, telephone, mot_de_passe_hash, ramq, date_naissance, prenom, nom, consentement_partage_donnees) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           email,
@@ -252,6 +255,8 @@ export const registerUser = async (
           hashedPassword,
           clientData.ramq || '',
           clientData.date_naissance ? clientData.date_naissance.toISOString() : new Date().toISOString(),
+          clientData.prenom || '',
+          clientData.nom || '',
           clientData.consentement_partage_donnees ? 1 : 0
         ]
       );
@@ -275,5 +280,100 @@ export const registerUser = async (
       success: false,
       message: "Erreur lors de l'enregistrement. Veuillez réessayer."
     };
+  }
+};
+
+/**
+ * Génère et envoie un token de réinitialisation si l'email existe.
+ */
+export const requestPasswordReset = async (email: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const db = await getDatabase();
+
+    // Vérifier si l'email existe chez les clients ou médecins
+    const client = await db.get('SELECT id FROM clients WHERE email = ?', [email]);
+    const medecin = await db.get('SELECT id FROM comptes_professionnels WHERE email = ?', [email]);
+
+    if (!client && !medecin) {
+      return { success: false, message: 'Aucun compte trouvé avec cet email.' };
+    }
+
+    // Générer un token unique
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60).toISOString(); // 1 heure
+
+    await db.run(
+      `INSERT INTO password_reset_tokens (token, email, expires_at) VALUES (?, ?, ?)`,
+      [token, email, expiresAt]
+    );
+
+    // Construire le lien de réinitialisation
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password/confirm?token=${token}`;
+
+    // Envoyer l'email (ou logger si pas de config SMTP)
+    const smtpHost = process.env.SMTP_HOST;
+    if (smtpHost) {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        secure: (process.env.SMTP_SECURE || 'false') === 'true',
+        auth: process.env.SMTP_USER
+          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+          : undefined,
+      });
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || 'no-reply@doclinic.local',
+        to: email,
+        subject: 'Réinitialisation de votre mot de passe',
+        text: `Pour réinitialiser votre mot de passe, cliquez sur le lien suivant: ${resetLink}`,
+        html: `<p>Pour réinitialiser votre mot de passe, cliquez sur le lien suivant:</p><p><a href="${resetLink}">${resetLink}</a></p>`,
+      });
+    } else {
+      console.log('Reset link (no SMTP configured):', resetLink);
+    }
+
+    return { success: true, message: 'Email de réinitialisation envoyé si le compte existe.' };
+  } catch (error) {
+    console.error('Erreur requestPasswordReset:', error);
+    return { success: false, message: 'Erreur lors de la demande de réinitialisation.' };
+  }
+};
+
+/**
+ * Confirme la réinitialisation de mot de passe via token et met à jour le mot de passe haché.
+ */
+export const confirmPasswordReset = async (token: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const db = await getDatabase();
+
+    const row = await db.get('SELECT token, email, expires_at FROM password_reset_tokens WHERE token = ?', [token]);
+    if (!row) return { success: false, message: 'Token invalide ou expiré.' };
+
+    const expiresAt = new Date(row.expires_at);
+    if (expiresAt.getTime() < Date.now()) {
+      // supprimer le token expiré
+      await db.run('DELETE FROM password_reset_tokens WHERE token = ?', [token]);
+      return { success: false, message: 'Token expiré.' };
+    }
+
+    const email = row.email as string;
+
+    // Hasher le nouveau mot de passe
+    const { hashPassword } = await import('../utils/passwordUtils');
+    const hashed = await hashPassword(newPassword);
+
+    // Mettre à jour dans la table appropriée
+    const updatedClient = await db.run('UPDATE clients SET mot_de_passe_hash = ? WHERE email = ?', [hashed, email]);
+    await db.run('UPDATE comptes_professionnels SET mot_de_passe_hash = ? WHERE email = ?', [hashed, email]);
+
+    // Supprimer le token
+    await db.run('DELETE FROM password_reset_tokens WHERE token = ?', [token]);
+
+    return { success: true, message: 'Mot de passe réinitialisé avec succès.' };
+  } catch (error) {
+    console.error('Erreur confirmPasswordReset:', error);
+    return { success: false, message: 'Erreur lors de la réinitialisation du mot de passe.' };
   }
 };

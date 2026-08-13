@@ -81,21 +81,37 @@ router.post('/register', async (req, res) => {
 });
 
 // Route de réinitialisation du mot de passe (à implémenter)
-router.post('/reset-password', (req, res) => {
-  const { email } = req.body;
-  
-  if (!email) {
-    return res.status(400).json({ 
-      success: false, 
-      message: 'Email requis' 
-    });
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email requis' });
+
+    const { requestPasswordReset } = await import('../controllers/authController');
+    const result = await requestPasswordReset(email);
+
+    if (result.success) return res.json({ success: true, message: result.message });
+    return res.status(500).json({ success: false, message: result.message });
+  } catch (error) {
+    console.error('Erreur reset-password route:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
   }
-  
-  // TODO: Implémenter la réinitialisation du mot de passe
-  res.json({ 
-    success: true, 
-    message: 'Demande de réinitialisation du mot de passe envoyée' 
-  });
+});
+
+// Route pour confirmer la réinitialisation (token + nouveau mot de passe)
+router.post('/reset-password/confirm', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ success: false, message: 'Token et nouveau mot de passe requis' });
+
+    const { confirmPasswordReset } = await import('../controllers/authController');
+    const result = await confirmPasswordReset(token, newPassword);
+
+    if (result.success) return res.json({ success: true, message: result.message });
+    return res.status(400).json({ success: false, message: result.message });
+  } catch (error) {
+    console.error('Erreur reset-password confirm route:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
 });
 
 // Route pour obtenir les informations de l'utilisateur courant
