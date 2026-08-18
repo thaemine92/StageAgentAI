@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAppointments, getAppointmentById, getAppointmentsByPatient } from '../controllers/appointmentController';
+import { getAppointments, getAppointmentById, getAppointmentsByPatient, getAppointmentsByDoctor, createAppointment } from '../controllers/appointmentController';
 
 const router = Router();
 
@@ -62,6 +62,45 @@ router.get('/client/:clientId', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Erreur serveur' 
+    });
+  }
+});
+
+// GET /api/appointments/doctor/:doctorId - Rendez-vous d'un médecin
+router.get('/doctor/:doctorId', async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    // Utiliser getAppointmentsByDoctor depuis le contrôleur
+    const doctorAppointments = await getAppointmentsByDoctor(doctorId);
+    
+    res.json({ 
+      success: true, 
+      appointments: doctorAppointments 
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des rendez-vous du médecin:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur serveur' 
+    });
+  }
+});
+
+// POST /api/appointments - Créer un nouveau rendez-vous
+router.post('/', async (req, res) => {
+  try {
+    const appointmentData = req.body;
+    const newAppointment = await createAppointment(appointmentData);
+    
+    res.status(201).json({ 
+      success: true, 
+      appointment: newAppointment 
+    });
+  } catch (error) {
+    console.error('Erreur lors de la création du rendez-vous:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur serveur lors de la création du rendez-vous' 
     });
   }
 });

@@ -14,6 +14,13 @@ export interface Client {
   ramq: string; 
   date_naissance: Date;
   
+  // Informations médicales
+  age?: number;
+  maladie?: string;
+  traitement?: string;
+  antecedents_medicaux?: string;
+  allergies?: string;
+  
   // Conformité et vie privée
   consentement_partage_donnees: boolean;
   

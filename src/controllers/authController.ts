@@ -73,7 +73,7 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
           id: client.id,
           email: client.email,
           role: 'CLIENT',
-          nom: client.prenom && client.nom ? `${client.prenom} ${client.nom}` : undefined
+          nom: `${client.prenom || ''} ${client.nom || ''}`.trim() || 'Utilisateur'
         };
         
         // Stocker en localStorage pour la session (côté client uniquement)

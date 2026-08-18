@@ -13,7 +13,12 @@ const AppointmentDetailsPage = () => {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            setRdv(data.appointment);
+            // Convertir la date en objet Date
+            const appointment = data.appointment;
+            setRdv({
+              ...appointment,
+              heure_debut: new Date(appointment.heure_debut)
+            });
           }
         })
         .catch(() => setRdv(null))
@@ -36,7 +41,14 @@ const AppointmentDetailsPage = () => {
         <h2 className="text-xl font-semibold mb-4 text-blue-400">Informations patient</h2>
         <div className="space-y-4">
           <p><span className="text-gray-400">Patient :</span> {rdv.nom_patient}</p>
-          <p><span className="text-gray-400">Heure :</span> {new Date(rdv.heure_debut).toLocaleString()}</p>
+          <p><span className="text-gray-400">Heure :</span> {(() => {
+            try {
+              const date = new Date(rdv.heure_debut);
+              return !isNaN(date.getTime()) ? date.toLocaleString() : 'Date invalide';
+            } catch {
+              return 'Date invalide';
+            }
+          })()}</p>
           <p><span className="text-gray-400">Statut :</span> {rdv.statut}</p>
           <p><span className="text-gray-400">Consignes :</span> {rdv.consignes_specifiques}</p>
         </div>

@@ -51,7 +51,14 @@ const ClientPortalPage = () => {
           <div className="space-y-4">
             {clientAppointments.map((rdv) => (
               <div key={rdv.id} className="bg-slate-900 p-4 rounded-lg border border-slate-700">
-                <p><span className="text-gray-400">Date et heure :</span> {new Date(rdv.heure_debut).toLocaleString()}</p>
+                <p><span className="text-gray-400">Date et heure :</span> {(() => {
+                  try {
+                    const date = new Date(rdv.heure_debut);
+                    return !isNaN(date.getTime()) ? date.toLocaleString() : 'Date invalide';
+                  } catch {
+                    return 'Date invalide';
+                  }
+                })()}</p>
                 <p><span className="text-gray-400">Statut :</span> <span className="font-semibold text-yellow-400">{rdv.statut}</span></p>
                 {rdv.consignes_specifiques && (
                   <div className="mt-2 p-3 bg-blue-950/50 border border-blue-800 rounded text-blue-200 text-sm">

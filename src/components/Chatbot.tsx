@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { RendezVous } from '../models/RendezVous';
+import { getCurrentUser } from '../utils/authFrontend';
 
 // Interface pour les messages du chat
 export interface Message {
@@ -17,7 +19,14 @@ export interface Suggestion {
   action: () => void;
 }
 
-const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patient' | 'doctor'; userId?: string }) => {
+const Chatbot = () => {
+  const location = useLocation();
+  
+  // Récupérer l'utilisateur connecté et déterminer son rôle
+  const user = getCurrentUser();
+  const userRole = user?.role === 'MEDECIN' ? 'doctor' : 'patient';
+  const userId = user?.id || '';
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -32,7 +41,16 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState<string>('Utilisateur');
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Récupérer le nom de l'utilisateur connecté
+  useEffect(() => {
+    if (user?.nom) {
+      setUserName(user.nom);
+    }
+  }, [user?.nom]);
 
   // Faire défiler vers le bas à chaque nouveau message
   useEffect(() => {
@@ -79,7 +97,7 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
     setIsLoading(true);
 
     try {
-      // Appel à l'API backend
+      // Appel à l'API backend avec l'historique de conversation
       const response = await fetch('http://localhost:3001/api/ai/chat', {
         method: 'POST',
         headers: {
@@ -89,6 +107,13 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
           message: text,
           userId,
           userRole,
+          userName,
+          // Envoyer l'historique de conversation pour que l'IA ait le contexte
+          conversationHistory: messages.slice(0, -1).map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.content
+          })),
+          conversationId: conversationId
         }),
       });
 
@@ -97,6 +122,11 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
       }
 
       const data = await response.json();
+
+      // Mettre à jour le conversationId si présent dans la réponse
+      if (data.conversationId) {
+        setConversationId(data.conversationId);
+      }
 
       // Ajouter la réponse de l'IA
       const aiMessage: Message = {
@@ -126,14 +156,26 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
       }
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      setError(errorMessage);
+      
+      // Message d'erreur plus spécifique
+      let errorReply = "Désolé, je n'ai pas pu traiter votre demande.";
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        errorReply = "Désolé, impossible de contacter le serveur. Veuillez vérifier votre connexion internet et réessayer.";
+      } else if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+        errorReply = "Désolé, la ressource demandée n'est pas disponible.";
+      } else {
+        errorReply = "Désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer plus tard.";
+      }
+      
       // Ajouter un message d'erreur
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'ai',
-          content: "Désolé, je n'ai pas pu traiter votre demande. Veuillez réessayer plus tard.",
+          content: errorReply,
           timestamp: new Date(),
         },
       ]);
@@ -162,6 +204,12 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
+
+  // Ne pas afficher si l'utilisateur n'est pas connecté ou sur les pages publiques
+  const publicRoutes = ['/', '/register', '/reset-password', '/reset-password/confirm'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+  
+  if (!user || isPublicRoute) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -215,7 +263,7 @@ const Chatbot = ({ userRole = 'patient', userId = 'user1' }: { userRole?: 'patie
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-white">Assistant Médical</h3>
+                <h3 className="font-semibold text-white">Bonjour {userName} !</h3>
                 <p className="text-xs text-gray-400">
                   {userRole === 'doctor' ? 'Mode Médecin' : 'Mode Patient'}
                 </p>

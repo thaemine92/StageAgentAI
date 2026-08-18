@@ -4,6 +4,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: "Tableau de bord", icon: "🏠", path: "/dashboard" },
     { name: "Patients", icon: "👥", path: "/patients" },
+    { name: "Mon Espace", icon: "👤", path: "/mon-espace" },
     { name: "Rendez-vous", icon: "📅", path: "/rendezvous" },
     { name: "Chat", icon: "💬", path: "/chat" },
     { name: "Documents", icon: "📁", path: "/documents" },

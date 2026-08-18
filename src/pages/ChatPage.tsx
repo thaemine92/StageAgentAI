@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/header';
-import Chatbot from '../components/Chatbot';
 
 const ChatPage = () => {
   const [userRole, setUserRole] = useState<'patient' | 'doctor'>('patient');
@@ -84,14 +83,11 @@ const ChatPage = () => {
           {/* Zone de chat intégrée */}
           <div className="mt-6">
             <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 h-[600px]">
-              <Chatbot userRole={userRole} userId={userId} />
+              <p className="text-gray-400">Le chatbot flottant est disponible en bas à droite de l'écran.</p>
             </div>
           </div>
         </div>
       </main>
-
-      {/* Chatbot flottant (optionnel) */}
-      <Chatbot userRole={userRole} userId={userId} />
     </div>
   );
 };

@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { useClients } from '../hooks/UseClients';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/header';
-import Chatbot from '../components/Chatbot';
 
 const PatientDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,9 +72,6 @@ const PatientDetailsPage = () => {
           </div>
         </div>
       </main>
-
-      {/* Chatbot Planifia */}
-      <Chatbot userRole="doctor" userId="doc1" />
     </div>
   );
 };
